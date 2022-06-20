@@ -1,6 +1,6 @@
 {
   "name": "@itkyk/minify-images",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "./bin/minify.js",
   "scripts": {
@@ -32,5 +32,11 @@
     "is-plain-object": "^5.0.0",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
-  }
+  },
+  "author": "Takayuki Inoue <> (https://github.com/ITakayuki)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itkyk/minify-images/issues"
+  },
+  "homepage": "https://github.com/itkyk/minify-images#readme"
 }
