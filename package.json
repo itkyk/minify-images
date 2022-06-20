@@ -1,5 +1,5 @@
 {
-  "name": "minify-images",
+  "name": "@itkyk/minify-images",
   "version": "1.0.0",
   "description": "",
   "main": "./bin/minify.js",
