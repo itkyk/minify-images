@@ -4,7 +4,11 @@
   "description": "",
   "main": "./bin/minify.js",
   "scripts": {
-    "ex": "ts-node-dev exsample/index.ts"
+    "watch": "tsc -w",
+    "build": "tsc",
+    "delExsample": "rm -r -f ./exsample/output",
+    "cli": "node ./bin/index.js -i ./exsample/images -o ./exsample/output",
+    "api": "ts-node ./exsample/index.ts"
   },
   "bin": {
     "minify": "./bin/index.js"
@@ -12,7 +16,6 @@
   "keywords": [
     "minify", "optimize", "image", "jpeg", "png", "svg", "typescript"
   ],
-  "author": "",
   "license": "ISC",
   "devDependencies": {
     "@squoosh/lib": "^0.4.0",
