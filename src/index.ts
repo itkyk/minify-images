@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Command } from "commander";
 import ImageMin, { ImageMinOptionInterface } from "./minify";
 const program = new Command();

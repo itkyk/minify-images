@@ -3,11 +3,11 @@ import { ImagePool } from "@squoosh/lib";
 import { cpus } from "os";
 import { optimize } from "svgo";
 import path from "path";
-import fs from "fs-extra";
+import fs from "fs";
 import glob from "glob";
 import DeepMerge from "deepmerge";
 import { isPlainObject } from "is-plain-object";
-import { PickType, color, customTable } from "./utils";
+import { PickType, color, customTable, sleep } from "./utils";
 import {
   defaultMozJpegOpts,
   defaultOxipngOpts,
@@ -56,7 +56,7 @@ class ImageMin {
     this.outputPath = path.resolve(options.outputPath);
     this.imagePool = new ImagePool(cpus().length);
     this.encodeJPG_and_PNG().then();
-    this.encodeSvg();
+    this.encodeSvg().then();
   }
 
   private encodeJPG_and_PNG = async () => {
@@ -72,10 +72,10 @@ class ImageMin {
     this.imagePool.close();
   };
 
-  private encodeSvg = () => {
+  private encodeSvg = async () => {
     const svgFiles = glob.sync(`${this.inputPath}/**/*.svg`);
     for (const file of svgFiles) {
-      this.minifySvg(file);
+      await this.minifySvg(file);
     }
   };
 
@@ -123,7 +123,7 @@ class ImageMin {
       } = item;
 
       // 圧縮したデータを格納する変数
-      let data;
+      let data: any;
 
       // JPGならMozJPEGで圧縮したデータを取得
       if (encodedWith.mozjpeg) {
@@ -136,25 +136,37 @@ class ImageMin {
       // ファイルを書き込む
       const outputPath = name.replace(this.inputPath, this.outputPath);
       this.diggerDirectory(outputPath);
-      const inputSize = fs.statSync(item.name).size;
-      const outputSize = data.size;
-      if (inputSize > outputSize) {
-        await fs.writeFile(`${outputPath}`, data.binary);
-        customTable({
-          Encoded: outputPath,
-          minify: `${100 - (outputSize / inputSize) * 100}%`,
-        });
-      } else {
-        await fs.copySync(item.name, outputPath);
-        customTable({
-          Encoded: outputPath,
-          minify: `0%`,
-        });
-      }
+      sleep(1000).then(async () => {
+        if (data) {
+          const inputSize = fs.statSync(item.name).size;
+          // @ts-ignore
+          const outputSize = data.size;
+          if (inputSize > outputSize) {
+            // @ts-ignore
+            await fs.writeFileSync(`${outputPath}`, data.binary);
+            customTable({
+              Encoded: outputPath,
+              minify: `${100 - (outputSize / inputSize) * 100}%`,
+            });
+          } else {
+            await fs.copyFileSync(item.name, outputPath);
+            customTable({
+              Encoded: outputPath,
+              minify: `0%`,
+            });
+          }
+        } else {
+          fs.copyFileSync(item.name, outputPath);
+          customTable({
+            Encoded: outputPath,
+            minify: `0%`,
+          });
+        }
+      });
     }
   };
 
-  private minifySvg = (svgPath: string) => {
+  private minifySvg = async (svgPath: string) => {
     const svgString = fs.readFileSync(svgPath);
     const svgResult = optimize(svgString, {
       path: svgPath,

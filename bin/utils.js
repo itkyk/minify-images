@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customTable = exports.color = void 0;
+exports.customTable = exports.sleep = exports.color = void 0;
 class color {
 }
 exports.color = color;
@@ -13,6 +13,14 @@ color.blue = (log) => {
 color.red = (log) => {
     return `\u001b[31m${log}\u001b[0m`;
 };
+const sleep = (delay) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(null);
+        }, delay);
+    });
+};
+exports.sleep = sleep;
 const customTable = (log) => {
     const topLeft = "┌";
     const topRight = "┐";

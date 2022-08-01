@@ -13,6 +13,14 @@ export class color {
   };
 }
 
+export const sleep = (delay: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(null);
+    }, delay);
+  });
+};
+
 export const customTable = (log: Record<string, any>) => {
   const topLeft = "┌";
   const topRight = "┐";
