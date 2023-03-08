@@ -1,40 +1,17 @@
 #!/usr/bin/env node
-"use strict";
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 
 // src/index.ts
-var import_commander = require("commander");
+import { Command } from "commander";
 
 // src/minify.ts
-var import_lib = require("@squoosh/lib");
-var import_os = require("os");
-var import_svgo = require("svgo");
-var path = __toESM(require("path"));
-var fs = __toESM(require("fs"));
-var import_glob = __toESM(require("glob"));
-var import_deepmerge = __toESM(require("deepmerge"));
-var import_is_plain_object = require("is-plain-object");
+import { ImagePool } from "@squoosh/lib";
+import { cpus } from "os";
+import { optimize } from "svgo";
+import * as path from "path";
+import * as fs from "fs";
+import glob from "glob";
+import DeepMerge from "deepmerge";
+import { isPlainObject } from "is-plain-object";
 
 // src/utils.ts
 var color = class {
@@ -136,7 +113,7 @@ var imagePoolList;
 var ImageMin = class {
   constructor(options) {
     this.encodeJPG_and_PNG = async () => {
-      const imageFiles = import_glob.default.sync(`${this.inputPath}/**/*.{jpg,jpeg,png}`);
+      const imageFiles = glob.sync(`${this.inputPath}/**/*.{jpg,jpeg,png}`);
       imagePoolList = imageFiles.map((fileName) => {
         const imageFile = fs.readFileSync(`${fileName}`);
         let image = this.imagePool.ingestImage(imageFile);
@@ -148,7 +125,7 @@ var ImageMin = class {
       this.imagePool.close();
     };
     this.encodeSvg = async () => {
-      const svgFiles = import_glob.default.sync(`${this.inputPath}/**/*.svg`);
+      const svgFiles = glob.sync(`${this.inputPath}/**/*.svg`);
       for (const file of svgFiles) {
         await this.minifySvg(file);
       }
@@ -231,7 +208,7 @@ var ImageMin = class {
     };
     this.minifySvg = async (svgPath) => {
       const svgString = fs.readFileSync(svgPath);
-      const svgResult = (0, import_svgo.optimize)(svgString, {
+      const svgResult = optimize(svgString, {
         path: svgPath,
         multipass: true,
         plugins: this.svgoOpts
@@ -264,8 +241,8 @@ var ImageMin = class {
       }
     };
     this.mergeObject = (base, add) => {
-      return (0, import_deepmerge.default)(base, add, {
-        isMergeableObject: import_is_plain_object.isPlainObject
+      return DeepMerge(base, add, {
+        isMergeableObject: isPlainObject
       });
     };
     var _a, _b, _c, _d;
@@ -284,7 +261,7 @@ var ImageMin = class {
     this.svgoOpts = ((_d = options.encodeOptions) == null ? void 0 : _d.svgo) || defaultSVGOOpts;
     this.inputPath = path.resolve(options.inputPath);
     this.outputPath = path.resolve(options.outputPath);
-    this.imagePool = new import_lib.ImagePool((0, import_os.cpus)().length);
+    this.imagePool = new ImagePool(cpus().length);
     this.encodeJPG_and_PNG().then();
     this.encodeSvg().then();
   }
@@ -292,7 +269,7 @@ var ImageMin = class {
 var minify_default = ImageMin;
 
 // src/index.ts
-var program = new import_commander.Command();
+var program = new Command();
 program.requiredOption("-o, --output <value>", "output dir").requiredOption("-i, --input <value>", "input dir").option("-m, --mozjpeg <value>", "mozjpeg encode option").option("-ox, --oxipng <value>", "oxipng encode option").option("-q, --quant <value>", "quant option");
 program.parse(process.argv);
 var opts = program.opts();

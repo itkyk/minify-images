@@ -2,8 +2,8 @@
 import { ImagePool } from "@squoosh/lib";
 import { cpus } from "os";
 import { optimize } from "svgo";
-import path from "path";
-import fs from "fs";
+import * as path from "path";
+import * as fs from "fs";
 import glob from "glob";
 import DeepMerge from "deepmerge";
 import { isPlainObject } from "is-plain-object";
