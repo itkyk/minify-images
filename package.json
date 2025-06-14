@@ -47,7 +47,7 @@
     "commander": "^9.3.0",
     "deepmerge": "^4.2.2",
     "fs-extra": "^10.1.0",
-    "glob": "^8.0.3",
+    "glob": "^9.0.0",
     "is-plain-object": "^5.0.0",
     "svgo": "^2.8.0"
   },
